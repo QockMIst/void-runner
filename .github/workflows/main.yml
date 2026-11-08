@@ -40,7 +40,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           VALUE_REQUESTS_CHANNEL_ID: ${{ secrets.VALUE_REQUESTS_CHANNEL_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 cloud_scan_batch.py > run.log 2>&1
+        run: run: python3 -u cloud_scan_batch.py 2>&1 | tee run.log
 
       - name: Save updated database to the PRIVATE repo
         if: always()
