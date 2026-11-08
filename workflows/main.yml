@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: read
   actions: write
 
 jobs:
@@ -18,36 +18,41 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 350
     steps:
-      - name: Checkout repository
+      - name: Check out the PRIVATE code repo
         uses: actions/checkout@v4
+        with:
+          repository: QockMlst/derr
+          token: ${{ secrets.PRIVATE_REPO_PAT }}
+          path: app
 
       - name: Install Python & OCR packages
+        working-directory: app
         run: |
           sudo apt-get update
           sudo apt-get install -y tesseract-ocr
           pip install -r requirements.txt
 
-      - name: Run 24/7 Discord Bot + Cloud Scanner Batch
+      - name: Run Discord bot + cloud scanner
+        working-directory: app
         env:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           DISCORD_SCANNER_TOKEN: ${{ secrets.DISCORD_SCANNER_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           VALUE_REQUESTS_CHANNEL_ID: ${{ secrets.VALUE_REQUESTS_CHANNEL_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 cloud_scan_batch.py
+        run: python3 cloud_scan_batch.py > run.log 2>&1
 
-      - name: Save Updated Database Back to Repo
+      - name: Save updated database to the PRIVATE repo
         if: always()
+        working-directory: app
         run: |
           git config user.name "void-scanner-bot"
           git config user.email "void-scanner-bot@users.noreply.github.com"
           git add -f void_data.sqlite3
           git diff --staged --quiet || (git commit -m "Update proofs & UAID database" && git pull --rebase -X theirs && git push)
 
-      - name: Immediately Trigger Next Run
+      - name: Trigger next run
         if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh workflow run main.yml --ref main || true
+        run: gh workflow run main.yml --repo "$GITHUB_REPOSITORY" --ref main || true
