@@ -37,6 +37,7 @@ jobs:
         env:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           DISCORD_SCANNER_TOKEN: ${{ secrets.DISCORD_SCANNER_TOKEN }}
+          VOID_SCANNER_TOKEN: ${{ secrets.VOID_SCANNER_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           VALUE_REQUESTS_CHANNEL_ID: ${{ secrets.VALUE_REQUESTS_CHANNEL_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
