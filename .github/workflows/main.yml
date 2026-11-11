@@ -1,4 +1,4 @@
-name: Void 24/7 Cloud Scanner
+name: RUNNER
 
 on:
   schedule:
