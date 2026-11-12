@@ -44,7 +44,7 @@ jobs:
           USE_TURSO: '1'
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
-        run: python3 -u cloud_scan_batch.py 2>&1 | tee run.log
+        run: python3 -u supervisor.py 2>&1 | tee run.log
 
       - name: Final flush to Turso (anything still pending)
         if: always()
