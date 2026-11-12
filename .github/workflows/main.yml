@@ -1,4 +1,4 @@
-name: RUNNER
+name: Void 24/7 Cloud Scanner
 
 on:
   schedule:
@@ -45,6 +45,15 @@ jobs:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
         run: python3 -u cloud_scan_batch.py 2>&1 | tee run.log
+
+      - name: Final flush to Turso (anything still pending)
+        if: always()
+        working-directory: app
+        env:
+          USE_TURSO: '1'
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: python3 turso_store.py flush
 
       - name: Trigger next run
         if: always()
